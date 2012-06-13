@@ -1,0 +1,127 @@
+House Billing System
+Database Name: 	HBS
+
+1. electricity_billing_rules
+ebr_id---PK
+ebr_start_unit [check not <= 0] / [for eg: 1]
+ebr_end_unit [can be infinity, for e.g. >=400]/[check not <= ebr_start_unit]
+ebr_per_unit_cost [check not <= 0]
+ebr_strt_date [ month, year]
+ebr_end_date [default max end_date for active]/[check not <= current row->ebr_strt_date]
+ebr_rule_status [active/inactive] {Note: automatic active/inactive dependening on current_date exeeding end_date}
+
+Note: for new rules new starting date will be same as previous end_date and new end_date will be max end_date. 
+
+2. water_billing_rules
+wbr_id---PK
+wbr_per_unit [check not <= 0] [per 1000 unit]
+wbr_unit_cost [check not <= 0] [6.34 taka per 1000 unit]
+wbr_strt_date [ month, year]
+wbr_end_date [default max end_date for active]/[check not <= current row->wbr_strt_date]
+wbr_rule_status [active/inactive] {Note: automatic active/inactive dependening on current_date exeeding end_date}
+
+Note: for new rules new starting date will be same as previous end_date and new end_date will be max end_date. 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+1 admin
+a_id ---PK 
+a_name
+a_usrnm (aiub email)
+a_pw
+a_joindate
+a_lst_login
+a_type (General Admin/Super Admin)
+a_code (random)
+a_status
+
+2 login_log
+log_id  --- PK
+log_a_id --- FK (admin.a_id)
+log_daytime (admin - a_lst_login)
+
+3 to_do_task
+to_id --- PK
+to_header (title)
+to_note
+to_priority (high/medium/low)
+to_createdate
+to_remainder_type
+to_status (complete/uncomplete)
+to_ownr ---  FK (admin.a_id)
+
+4 student_discipline
+sd_id --- PK
+sd_student_id
+sd_type (not wearing id / carry drugs / )
+sd_warning (1st time / 2nd time)
+sd_date
+
+5 teacher
+t_id --- PK
+t_aiubid ---PK
+t_name
+t_gender
+t_status ( active / on study leave / resign )
+t_dob
+t_designation ( lecturer / professor�)
+t_dept (CSE / BBA)
+t_postal_add
+t_email
+t_phn
+
+6 room
+r_id --- PK
+r_name (433/CL5 / 7211 /EL3�)
+r_type (class room / lab /wash room / auditorium)
+r_campus(1 / 7 /5�)
+r_floor
+
+7 semester
+s_id --- PK
+s_type (fall / spring /summer)
+s_sdate
+s_edate
+s_yr
+
+8 class_slot
+c_id ---PK
+rc_id 
+c_r_id ---FK(room.r_id)
+c_ strt
+c_ end
+c_day
+
+
+9 reg_course
+rc_id ---PK
+rc_name (PL-1 / Java -2�)
+rc_sec (A / B�)
+rc_dept (BBA / CSE /EEE)
+rc_s_id ---FK(semester.s_id)
+t_id FK
+
+10 room_reserve
+rr_id ---PK
+rr_a_id---FK(admin.a_id)
+rr_purpose (makeup class /seminar / registration / fault in AC, Projector)
+rr_ miss_id ---FK(missed_class.mic_id)[need only for makeup class reservation�also check teacher has available time except regular theory / lab]
+rr_sdate (let start date to end date is 3 day�then create 3 row in reserve_log)
+rr_edate(let start date to end date is same�then create 1 row in reserve_log and check start date cannot greater then end date)
+r_time start
+r_end
+
+
+11 teaher_class_log
+cl_id 
+c_id FK class slot
+strt null 
+end null
+date
+status
+rr_ miss_id
+
+
+
+
+
+
+

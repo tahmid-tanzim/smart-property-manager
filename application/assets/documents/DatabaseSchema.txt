@@ -1,0 +1,143 @@
+Database Name: "HouseRent"
+Law: 
+    Current Month - House Rent, Gas Bill, Sweeper
+    Last Month - Electricity Bill, Water, Previous Due, Misc. 
+
+SQL: CREATE DATABASE HouseRent;
+
+TRUNCATE TABLE tblnm; ALTER TABLE tblnm AUTO_INCREMENT=1;
+
+CREATE TABLE users(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+username varchar (40) NOT NULL,
+password varchar (40) NOT NULL,
+status boolean not null default 0 COMMENT 'Active 1 , Inactive 0',
+account_type INT not null default 1  COMMENT 'Admin 1 , Renter 2',
+registration_date datetime NOT NULL,
+last_login datetime NOT NULL,
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+CREATE TABLE flat(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+name varchar (10) NOT NULL COMMENT 'Apartment Name Like: 3-B',
+electricity_meter varchar (10) COMMENT 'Electricity Meter Number',
+water_meter varchar (10) COMMENT 'Water Meter Number',
+size varchar (15) COMMENT 'Flat size in Square Fit',
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Apartment / Flat - Details Informations'; 
+
+CREATE TABLE house_rent_policy(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+flat_id INT COMMENT 'Foreign Key flat->id',
+rent_amount double NOT NULL COMMENT 'House Rent Amount',
+start_date datetime NOT NULL COMMENT 'New Rent Policy Start Date',
+end_date datetime COMMENT 'Current Rent Policy end Date',
+status boolean not null default 1 COMMENT 'Current Policy - Active 1 , Inactive 0',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Flat / House Rent Policy from month'; 
+
+CREATE TABLE gas_bill_policy(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+flat_id INT COMMENT 'Foreign Key flat->id',
+bill_amount double NOT NULL COMMENT 'Gas Bill Amount',
+start_date datetime NOT NULL COMMENT 'New Gas Bill Policy Start Date',
+end_date datetime COMMENT 'Current Gas Bill Policy end Date',
+status boolean not null default 1 COMMENT 'Current Policy - Active 1 , Inactive 0',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Gas Bill Policy from month'; 
+
+CREATE TABLE sweeper_bill_policy(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+flat_id INT COMMENT 'Foreign Key flat->id',
+bill_amount double NOT NULL COMMENT 'Sweeper Bill Amount',
+start_date datetime NOT NULL COMMENT 'New Sweeper Bill Policy Start Date',
+end_date datetime COMMENT 'Current Sweeper Bill Policy End Date',
+status boolean not null default 1 COMMENT 'Current Policy - Active 1 , Inactive 0',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Sweeper Bill Policy from month'; 
+
+CREATE TABLE electricity_bill(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+flat_id INT COMMENT 'Foreign Key flat->id',
+bill_amount double NOT NULL COMMENT 'Electricity Bill Amount',
+bill_month datetime NOT NULL COMMENT 'Electricity Bill for month',
+bill_unit double COMMENT 'Electricity Bill meter Reading Unit',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Electricity Bill for month'; 
+
+CREATE TABLE water_bill(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+flat_id INT COMMENT 'Foreign Key flat->id',
+bill_amount double NOT NULL COMMENT 'Water Bill Amount',
+bill_month datetime NOT NULL COMMENT 'Water Bill for month',
+bill_unit double COMMENT 'Water Bill meter Reading Unit',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Water Bill for month'; 
+
+CREATE TABLE tenant(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+fullname varchar (70) NOT NULL,
+address varchar (100) COMMENT 'Permanent Postal Address',
+email varchar (70),
+phone1 varchar (25) COMMENT 'Primary Phone number',
+phone2 varchar (25) COMMENT 'Secondary Phone number',
+national_id varchar (50) COMMENT 'National ID Number',
+designation varchar (50) COMMENT 'Job designation like, Business, Lawyer',
+start_date datetime COMMENT 'Join First month',
+end_date datetime COMMENT ' leave Last Month',
+start_elec_unit double COMMENT 'Starting Electricity Meter reading unit',
+end_elec_unit double COMMENT 'Ending Electricity Meter reading unit',
+status boolean not null default 1 COMMENT 'Active 1 , Inactive 0',
+flat_id INT COMMENT 'Foreign Key flat->id',
+security_deposit double NOT NULL default 0 COMMENT 'Advance Security Deposit Money',
+note varchar (254) COMMENT 'any specific Note / Agreement regarding paying guest',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Paying guest Profile Details informations'; 
+
+CREATE TABLE invoice(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+month datetime NOT NULL COMMENT 'Invoice for month',
+flat_id INT COMMENT 'Foreign Key flat->id',
+house_rent_id INT COMMENT 'Foreign Key house_rent_policy->id',
+gas_bill_id INT COMMENT 'Foreign Key gas_bill_policy->id',
+sweeper_bill_id INT COMMENT 'Foreign Key sweeper_bill_policy->id',
+electricity_bill_id INT COMMENT 'Foreign Key electricity_bill->id',
+water_bill_id INT COMMENT 'Foreign Key water_bill->id',
+misc double NOT NULL DEFAULT 0 COMMENT 'Miscellaneous Expense',
+due_amount double NOT NULL DEFAULT 0 COMMENT 'Current Due Amount',
+note varchar (100) COMMENT 'any specific Invoice Note',
+created_date datetime NOT NULL COMMENT 'Invoice for month',
+payment_status boolean not null default 1 COMMENT 'Active 1 (Open for this month) , Inactive 0 (Close for this month)',
+FOREIGN KEY (flat_id) REFERENCES flat(id),
+FOREIGN KEY (house_rent_id) REFERENCES house_rent_policy(id),
+FOREIGN KEY (gas_bill_id) REFERENCES gas_bill_policy(id),
+FOREIGN KEY (sweeper_bill_id) REFERENCES sweeper_bill_policy(id),
+FOREIGN KEY (electricity_bill_id) REFERENCES electricity_bill(id),
+FOREIGN KEY (water_bill_id) REFERENCES water_bill(id),
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Monthly Invoice';
+
+
+
+CREATE TABLE dummy_invoice(
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+month datetime,
+flat_id varchar (10),
+house_rent DOUBLE,
+gas_bill DOUBLE,
+sweeper_bill DOUBLE,
+electricity_bill DOUBLE,
+water_bill DOUBLE,
+misc double,
+due_amount double NOT NULL DEFAULT 0 COMMENT 'Current Due Amount',
+note varchar (100) COMMENT 'any specific Invoice Note',
+created_date datetime,
+PRIMARY KEY(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8, COMMENT = 'Dummy Monthly Invoice';
